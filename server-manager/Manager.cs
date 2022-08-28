@@ -15,14 +15,16 @@ namespace ServerManager
 
         static void Main(string[] args)
         {
-            if(!File.Exists(configurationFileName))
-                throw new Exception("Configuration file for Server Manager could not be found at " + Assembly.GetExecutingAssembly().Location);
+            string configurationPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "configuration.json");
+
+            if (!File.Exists(configurationPath))
+                throw new Exception("Configuration file for Server Manager could not be found at " + configurationPath);
 
             string json = null;
 
             try
             {
-                json = File.ReadAllText(configurationFileName);
+                json = File.ReadAllText(configurationPath);
             }
             catch
             {
