@@ -2,17 +2,23 @@
 using ServerManager.Models.JsonObjects;
 using System;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace ServerManager
 {
     internal class Manager
     {
+        private const string configurationFileName = "configuration.json";
+
         private static bool enableLogging = false;
 
         static void Main(string[] args)
         {
-            string json = File.ReadAllText("configuration.json");
+            if(!File.Exists(configurationFileName))
+                throw new Exception("Configuration file for Server Manager could not be found at " + Assembly.GetExecutingAssembly().Location);
+
+            string json = File.ReadAllText(configurationFileName);
 
             ManagerConfiguration configuration = ManagerConfiguration.FromJson(json);
             Run(configuration).Wait();
