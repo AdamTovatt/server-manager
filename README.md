@@ -8,5 +8,5 @@ Needs a configuration.json in the same directory as the executable. It should lo
 
 accessKey: your key to the netlify api. Can be obtained here: https://app.netlify.com/user/applications under "Personal access tokens"
 domains: a list of domains to check ip for
-interval: the TTL value on netlify, defaults to 1800 if not specified
+interval: the time between checks, defaults to 1800 if not specified
 enableLogging: if the application should write to the console
