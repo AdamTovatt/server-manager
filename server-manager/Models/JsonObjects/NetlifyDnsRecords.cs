@@ -23,7 +23,7 @@ namespace ServerManager.Models.JsonObjects
             if (Records == null || Records.Count == 0)
                 return null;
 
-            return Records.Where(x => x.Type == "A").First();
+            return Records.Where(x => x.Type == "A").FirstOrDefault();
         }
     }
 }
