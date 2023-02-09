@@ -37,54 +37,47 @@ namespace ServerManager
 
         private static async Task Run(ManagerConfiguration configuration)
         {
-            try
-            {
-                enableLogging = configuration.EnableLogging;
+            enableLogging = configuration.EnableLogging;
 
-                while (true)
+            while (true)
+            {
+                Netlify netlify = new Netlify(configuration.AccessKey);
+
+                string ipAddress = IpAddressHelper.GetIpAddress().ToString();
+                Log("Current ip: " + ipAddress);
+
+                foreach (string domainName in configuration.Domains)
                 {
-                    Netlify netlify = new Netlify(configuration.AccessKey);
+                    Log("\nWill check: " + domainName);
 
-                    string ipAddress = IpAddressHelper.GetIpAddress().ToString();
-                    Log("Current ip: " + ipAddress);
+                    NetlifyDnsRecord record = await netlify.GetDnsRecordAsync(domainName);
 
-                    foreach (string domainName in configuration.Domains)
+                    if (record == null || record.ToString() != ipAddress)
                     {
-                        Log("\nWill check: " + domainName);
+                        Log("Different ip found! Will update");
 
-                        NetlifyDnsRecord record = await netlify.GetDnsRecordAsync(domainName);
+                        if (record != null)
+                            await netlify.DeleteDnsRecordAsync(record);
 
-                        if (record == null || record.ToString() != ipAddress)
+                        record = new NetlifyDnsRecord()
                         {
-                            Log("Different ip found! Will update");
+                            Hostname = domainName,
+                            Value = ipAddress,
+                            Type = "A",
+                            Ttl = 1800
+                        };
 
-                            if (record != null)
-                                await netlify.DeleteDnsRecordAsync(record);
+                        await netlify.AddDnsRecordAsync(record);
 
-                            record = new NetlifyDnsRecord()
-                            {
-                                Hostname = domainName,
-                                Value = ipAddress,
-                                Type = "A",
-                                Ttl = 1800
-                            };
-
-                            await netlify.AddDnsRecordAsync(record);
-
-                            Log("Did update");
-                        }
-                        else
-                        {
-                            Log("Same ip found: " + record.ToString());
-                        }
+                        Log("Did update");
                     }
-
-                    await Task.Delay(TimeSpan.FromSeconds(configuration.Interval));
+                    else
+                    {
+                        Log("Same ip found: " + record.ToString());
+                    }
                 }
-            }
-            catch(Exception exception)
-            {
-                throw new Exception(exception.Message);
+
+                await Task.Delay(TimeSpan.FromSeconds(configuration.Interval));
             }
         }
 
