@@ -18,12 +18,12 @@ namespace ServerManager.Models.JsonObjects
             return result;
         }
 
-        internal NetlifyDnsRecord First()
+        internal NetlifyDnsRecord First(string domainName)
         {
             if (Records == null || Records.Count == 0)
                 return null;
 
-            return Records.Where(x => x.Type == "A").FirstOrDefault();
+            return Records.Where(x => x.Type == "A" && x.Hostname == domainName).FirstOrDefault();
         }
     }
 }

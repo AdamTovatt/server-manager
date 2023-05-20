@@ -28,7 +28,7 @@ namespace ServerManager
 
             NetlifyDnsRecords records = NetlifyDnsRecords.FromJson(response);
 
-            return records.First();
+            return records.First(domain);
         }
 
         public async Task<bool> DeleteDnsRecordAsync(NetlifyDnsRecord record)
