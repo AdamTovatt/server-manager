@@ -3,34 +3,31 @@ using ServerManager.Models.JsonObjects;
 using System;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace ServerManager
 {
     internal class Manager
     {
-        private const string configurationFileName = "configuration.json";
-
+        private const string config = "ServerManager.configuration.json";
         private static bool enableLogging = false;
 
         static void Main(string[] args)
         {
-            string configurationPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "configuration.json");
-
-            if (!File.Exists(configurationPath))
-                throw new Exception("Configuration file for Server Manager could not be found at " + configurationPath);
-
             string json = null;
-
             try
             {
-                json = File.ReadAllText(configurationPath);
+                using (var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream(config), Encoding.UTF8))
+                {
+                    json = reader.ReadToEnd();
+                }
             }
             catch
             {
-                throw new Exception("Error when loading configuration file at " + Assembly.GetExecutingAssembly().Location);
+                Console.WriteLine("Could not find configuration file: " + config);
+                return;
             }
-
             ManagerConfiguration configuration = ManagerConfiguration.FromJson(json);
             Run(configuration).Wait();
         }
