@@ -31,11 +31,6 @@ namespace ServerManager
 
             NetlifyDnsRecords records = NetlifyDnsRecords.FromJson(response);
 
-            foreach (var record in records.Records)
-            {
-                Console.WriteLine(record.Hostname);
-            }
-
             return records.First(domain);
         }
 
