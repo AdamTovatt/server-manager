@@ -1,9 +1,7 @@
 ﻿using ServerManager.Models;
 using ServerManager.Models.JsonObjects;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ServerManager
@@ -17,9 +15,14 @@ namespace ServerManager
             this.accessKey = accessKey;
         }
 
+        public static string ToDnsZone(string domain)
+        {
+            return String.Join("_", domain.Split(".").TakeLast(2));
+        }
+
         public async Task<NetlifyDnsRecord> GetDnsRecordAsync(string domain)
         {
-            string requestUrl = string.Format("https://api.netlify.com/api/v1/dns_zones/{0}/dns_records", domain.Replace('.', '_'));
+            string requestUrl = string.Format("https://api.netlify.com/api/v1/dns_zones/{0}/dns_records", ToDnsZone(domain));
 
             string response = await WebRequester.GetAsync(requestUrl, RequestHeader.GetAuthorizationHeader(accessKey));
 
@@ -33,7 +36,7 @@ namespace ServerManager
 
         public async Task<bool> DeleteDnsRecordAsync(NetlifyDnsRecord record)
         {
-            string requestUrl = string.Format("https://api.netlify.com/api/v1/dns_zones/{0}/dns_records/{1}", record.Hostname.Replace('.', '_'), record.Id);
+            string requestUrl = string.Format("https://api.netlify.com/api/v1/dns_zones/{0}/dns_records/{1}", ToDnsZone(record.Hostname), record.Id);
 
             await WebRequester.PostAsync(requestUrl, "", "", "DELETE", RequestHeader.GetAuthorizationHeader(accessKey));
 
@@ -42,7 +45,7 @@ namespace ServerManager
 
         public async Task<NetlifyDnsRecord> AddDnsRecordAsync(NetlifyDnsRecord record)
         {
-            string requestUrl = string.Format("https://api.netlify.com/api/v1/dns_zones/{0}/dns_records", record.Hostname.Replace('.', '_'));
+            string requestUrl = string.Format("https://api.netlify.com/api/v1/dns_zones/{0}/dns_records", ToDnsZone(record.Hostname));
 
             string response = await WebRequester.PostAsync(requestUrl, record.ToJson(), "application/json", "POST", RequestHeader.GetAuthorizationHeader(accessKey));
 
