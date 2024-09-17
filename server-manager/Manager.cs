@@ -2,6 +2,7 @@
 using ServerManager.Models.JsonObjects;
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -32,6 +33,9 @@ namespace ServerManager
             }
 
             ManagerConfiguration configuration = ManagerConfiguration.FromJson(json);
+
+            Log($"Started Server Manager\nConfig:\nEnable-logging: {enableLogging}\nInterval: {configuration.Interval}\nDomains:{string.Join(", ", configuration.Domains)}", true);
+
             Run(configuration).Wait();
         }
 
@@ -81,9 +85,9 @@ namespace ServerManager
             }
         }
 
-        private static void Log(string text)
+        private static void Log(string text, bool forceLog = false)
         {
-            if (enableLogging)
+            if (enableLogging || forceLog)
                 Console.WriteLine(text);
         }
     }
