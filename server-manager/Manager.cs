@@ -35,6 +35,7 @@ namespace ServerManager
             ManagerConfiguration configuration = ManagerConfiguration.FromJson(json);
 
             Log($"Started Server Manager\nConfig:\nEnable-logging: {enableLogging}\nInterval: {configuration.Interval}\nDomains:{string.Join(", ", configuration.Domains)}", true);
+            Log($"\nConfiguration path used: {configurationPath}", true);
 
             Run(configuration).Wait();
         }
