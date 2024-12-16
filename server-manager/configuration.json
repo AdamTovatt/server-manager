@@ -1,0 +1,6 @@
+﻿{
+  "accessKey": "NETLIFY_ACCESS_KEY",
+  "domains": ["domain1", "domain2"],
+  "interval": 1800,
+  "enableLogging": true
+}
